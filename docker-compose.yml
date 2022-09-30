@@ -1,21 +1,52 @@
-version: '3'
+# Development docker-compose.yml
+version: '3.5'
 
 services:
-###> doctrine/doctrine-bundle ###
-  database:
-    image: postgres:${POSTGRES_VERSION:-14}-alpine
-    environment:
-      POSTGRES_DB: ${POSTGRES_DB:-app}
-      # You should definitely change the password in production
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-!ChangeMe!}
-      POSTGRES_USER: ${POSTGRES_USER:-app}
+  my-commerce:
+    container_name: e-commerce-nginx
+    build:
+      context: ./docker/nginx
+      dockerfile: Dockerfile
+    ports:
+      - "9002:80"
     volumes:
-      - db-data:/var/lib/postgresql/data:rw
-      # You may use a bind-mounted host directory instead, so that it is harder to accidentally remove the volume and lose all your data!
-      # - ./docker/db/data:/var/lib/postgresql/data:rw
-###< doctrine/doctrine-bundle ###
+      - .:/app:cached
+    restart: unless-stopped
+    depends_on:
+      - e-commerce
+
+  e-commerce:
+    container_name: e-commerce
+    build:
+      context: .
+    volumes:
+      - .:/app:cached
+      - ./docker/service/php.ini:/usr/local/etc/php/conf.d/99-app.ini
+      - ./docker/service/www.conf:/usr/local/etc/php-fpm.d/www.conf
+    restart: unless-stopped
+    environment:
+      XDEBUG_CONFIG: ${XDEBUG_CONFIG}
+      APP_ENV: ${APP_ENV}
+      APP_DEBUG: ${APP_DEBUG}
+      APP_SECRET: ${APP_SECRET}
+    env_file:
+      - .env
+      - .env.local
+    depends_on:
+      - mysql
+
+  mysql:
+    image: mysql:8.0
+    container_name: e-commerce-mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: database
+    ports:
+      - "3308:3306"
+    volumes:
+      - database-volume:/var/lib/mysql
 
 volumes:
-###> doctrine/doctrine-bundle ###
-  db-data:
-###< doctrine/doctrine-bundle ###
+  database-volume:
+    driver: "local"
