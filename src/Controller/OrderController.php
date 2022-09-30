@@ -25,7 +25,7 @@ class OrderController extends AbstractController
         $this->managerRegistry = $managerRegistry;
     }
 
-    #[Route('/api/orders', name: 'app_order', methods: ['GET'])]
+    #[Route('/orders', name: 'app_order', methods: ['GET'])]
     public function index(): Response
     {
         /** @var OrderRepository $orderRepo */
