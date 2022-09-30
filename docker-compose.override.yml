@@ -1,0 +1,11 @@
+version: '3.5'
+
+services:
+    dockerhost:
+        container_name: e-commerce-dockerhost
+        image: qoomon/docker-host
+        cap_add: [ 'NET_ADMIN', 'NET_RAW' ]
+        restart: on-failure
+
+    my-commerce:
+        depends_on: [ dockerhost ]
