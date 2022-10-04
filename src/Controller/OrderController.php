@@ -25,7 +25,7 @@ class OrderController extends AbstractController
         $this->managerRegistry = $managerRegistry;
     }
 
-    #[Route('/orders', name: 'app_order', methods: ['GET'])]
+    #[Route('/api/orders', name: 'app_order', methods: ['GET'])]
     public function index(): Response
     {
         /** @var OrderRepository $orderRepo */
@@ -34,7 +34,7 @@ class OrderController extends AbstractController
         return $this->json($orders);
     }
 
-    #[Route('/order/create', name: 'app_order_create', methods: ['POST'])]
+    #[Route('/api/orders/create', name: 'app_order_create', methods: ['POST'])]
     public function store(Request $request)
     {
         $constraints = new Assert\Collection([
@@ -67,7 +67,7 @@ class OrderController extends AbstractController
         return $this->json(['message' => 'Order created successfully'], 201);
     }
 
-    #[Route('/orders/{id}', name: 'app_order_show', methods: ['GET'])]
+    #[Route('/api/orders/{id}', name: 'app_order_show', methods: ['GET'])]
     public function show($id): JsonResponse
     {
         /** @var OrderRepository $orderRepo */
@@ -76,7 +76,7 @@ class OrderController extends AbstractController
         return $this->json($order);
     }
 
-    #[Route('/orders/{id}', name: 'app_order_update', methods: ['PUT'])]
+    #[Route('/api/orders/{id}', name: 'app_order_update', methods: ['PUT'])]
     public function update($id, Request $request): JsonResponse
     {
         $constraints = new Assert\Collection([
